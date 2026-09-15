@@ -21,6 +21,3 @@ Thumbs.db
 # logs
 npm-debug.log*
 *.log
-
-# local homework notes — not part of the submission
-WALKTHROUGH.md
