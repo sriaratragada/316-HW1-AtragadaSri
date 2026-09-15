@@ -1,7 +1,8 @@
 /**
  * ListItem.js
  *
- * One row inside a Wolfie List: what has to be done, and the day it was entered.
+ * One row inside a Wolfie List: what has to be done, when it was entered, how
+ * urgent it is, when it is meant to be finished, and whether it is finished.
  *
  * PROTOTYPE DESIGN PATTERN
  * ------------------------
@@ -26,11 +27,15 @@
  */
 import { IdGenerator } from '../common/IdGenerator.js';
 import { DateUtil } from '../common/DateUtil.js';
+import { Priority } from '../common/Priority.js';
 
 export class ListItem {
     #id;
     #description;
     #dateEntered;
+    #priority;
+    #targetDate;
+    #completed;
 
     /**
      * @param {Object} initialValues any subset of the fields below
@@ -38,11 +43,17 @@ export class ListItem {
     constructor({
         id = IdGenerator.next('item'),
         description = '',
-        dateEntered = DateUtil.today()
+        dateEntered = DateUtil.today(),
+        priority = Priority.DEFAULT,
+        targetDate = null,
+        completed = false
     } = {}) {
         this.#id = id;
         this.#description = description;
         this.#dateEntered = DateUtil.clean(dateEntered) ?? DateUtil.today();
+        this.#priority = Priority.clean(priority);
+        this.#targetDate = DateUtil.clean(targetDate);
+        this.#completed = completed === true;
     }
 
     // -------------------------------------------------------------------------
@@ -53,6 +64,18 @@ export class ListItem {
     get id() { return this.#id; }
     get description() { return this.#description; }
     get dateEntered() { return this.#dateEntered; }
+    get priority() { return this.#priority; }
+    get targetDate() { return this.#targetDate; }
+    get completed() { return this.#completed; }
+
+    /**
+     * @return {boolean} true only when the completed checkbox is ticked. A
+     * target date says when an item is meant to be finished; it does not say
+     * that it is.
+     */
+    isCompleted() {
+        return this.#completed;
+    }
 
     /**
      * @return {Object} just this item's editable values, i.e. everything except
@@ -61,7 +84,10 @@ export class ListItem {
     getValues() {
         return {
             description: this.#description,
-            dateEntered: this.#dateEntered
+            dateEntered: this.#dateEntered,
+            priority: this.#priority,
+            targetDate: this.#targetDate,
+            completed: this.#completed
         };
     }
 
@@ -77,11 +103,14 @@ export class ListItem {
      * This is the only way in. Everything arriving here is cleaned first, so an
      * item can never be holding a date it should not.
      *
-     * @param {Object} values the new description and dateEntered
+     * @param {Object} values the new description, dates, priority and completed
      */
-    applyValues({ description, dateEntered }) {
+    applyValues({ description, dateEntered, priority, targetDate, completed }) {
         if (description !== undefined) this.#description = description;
         if (dateEntered !== undefined) this.#dateEntered = DateUtil.clean(dateEntered) ?? this.#dateEntered;
+        if (priority !== undefined) this.#priority = Priority.clean(priority);
+        if (targetDate !== undefined) this.#targetDate = DateUtil.clean(targetDate);
+        if (completed !== undefined) this.#completed = completed === true;
     }
 
     // -------------------------------------------------------------------------

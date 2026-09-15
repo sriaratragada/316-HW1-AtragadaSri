@@ -26,6 +26,7 @@ export class ListView extends Subject {
     #redoButton;
     #closeButton;
     #homeButton;
+    #addItemButton;
     #listNameInput;
     #cardPrototype;
 
@@ -48,6 +49,7 @@ export class ListView extends Subject {
         this.#redoButton = document.getElementById('redo-button');
         this.#closeButton = document.getElementById('close-button');
         this.#homeButton = document.getElementById('home-button');
+        this.#addItemButton = document.getElementById('add-item-button');
         this.#listNameInput = document.getElementById('list-name-input');
 
         this.#cardPrototype = new ItemCardPrototype();
@@ -184,6 +186,10 @@ export class ListView extends Subject {
             this.notifyObservers(EventTypes.CLOSE_LIST_REQUESTED);
         });
 
+        this.#addItemButton.addEventListener('click', () => {
+            this.notifyObservers(EventTypes.ADD_ITEM_REQUESTED);
+        });
+
         // change fires once the user is finished, i.e. on Enter or on leaving the
         // field, which is exactly the granularity we want on the undo stack. One
         // transaction per rename, not one per keystroke.
@@ -237,6 +243,12 @@ export class ListView extends Subject {
         switch (action) {
             case 'duplicate-item':
                 this.notifyObservers(EventTypes.DUPLICATE_ITEM_REQUESTED, { index });
+                break;
+            case 'delete-item':
+                this.notifyObservers(EventTypes.DELETE_ITEM_REQUESTED, {
+                    index,
+                    description: item.description
+                });
                 break;
             default:
                 this.notifyObservers(EventTypes.EDIT_ITEM_REQUESTED, { index });

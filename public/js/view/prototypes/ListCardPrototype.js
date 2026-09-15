@@ -50,7 +50,13 @@ export class ListCardPrototype extends CardPrototype {
 
         CardPrototype.requirePart(element, '.list-card-title').textContent = list.name;
         CardPrototype.requirePart(element, '.list-card-subtitle').textContent =
-            (list.size() === 0) ? 'No items yet' : `${list.size()} items`;
+            (list.size() === 0)
+                ? 'No items yet'
+                : `${list.countCompleted()} of ${list.size()} completed`;
+
+        const duplicateButton = CardPrototype.requirePart(element, '[data-action="duplicate-list"]');
+        duplicateButton.title = `Duplicate ${list.name}`;
+        duplicateButton.setAttribute('aria-label', `Duplicate the list named ${list.name}`);
 
         const deleteButton = CardPrototype.requirePart(element, '[data-action="delete-list"]');
         deleteButton.title = `Delete ${list.name}`;

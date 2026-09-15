@@ -175,11 +175,22 @@ export class WolfieListsModel extends Subject {
 
     /**
      * PROTOTYPE DESIGN PATTERN. The list clones itself, we simply file the copy
-     * away directly beneath the original.
+     * away directly beneath the original. Duplicating a list is not undoable.
      *
      * @param {string} listId the list to copy
      * @return {WolfieList|null} the copy
      */
+    duplicateList(listId) {
+        const index = this.#lists.findIndex((list) => list.id === listId);
+        if (index < 0) return null;
+
+        const original = this.#lists[index];
+        const copy = original.clone(this.#buildUnusedName(`${original.name} (Copy)`));
+        this.#lists.splice(index + 1, 0, copy);
+        this.#saveAndAnnounceLists();
+        return copy;
+    }
+
     /**
      * @param {string} listId the list to throw away
      * @return {boolean} true if a list was actually removed

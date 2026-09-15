@@ -69,6 +69,13 @@ export class WolfieList {
     }
 
     /**
+     * @return {number} how many items in this list have been ticked off
+     */
+    countCompleted() {
+        return this.#items.filter((item) => item.isCompleted()).length;
+    }
+
+    /**
      * @param {number} index
      * @return {ListItem|null} the item at that index, or null if out of bounds
      */
